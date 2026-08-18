@@ -8,12 +8,12 @@
 
 | 环节 | 选型 | 说明 |
 |---|---|---|
-| 基座模型 | **Qwen3-Coder-30B-A3B-Instruct**（主力，4090 可 QLoRA） / Qwen3-8B（预算备选） | Qwen3 系原生支持 vLLM MTP 投机解码 |
+| 基座模型 | **Qwen/Qwen3-8B-Instruct**（主力，4090 bf16 直跑）/ Qwen3-Coder-30B-A3B-Instruct（升级备选） | 通用 8B → 代码域 SFT 提升 |
 | 对齐 | **LLaMA-Factory**（QLoRA SFT + DPO） | 社区事实标准 |
 | 数据 | Magicoder-OSS-Instruct（筛 2-4k 高质量子集） | 代码指令数据 |
 | 评估 | **EvalPlus**（HumanEval+/MBPP+，pass@1） | 防数据污染标准 |
 | 量化 | AWQ INT4 / FP8 | |
-| 服务 | **vLLM**：continuous batching + prefix caching + MTP + multi-LoRA | 高吞吐核心 |
+| 服务 | **vLLM**：continuous batching + prefix caching + EAGLE3/ngram 投机解码 + multi-LoRA | 高吞吐核心（Qwen3-8B 无原生 MTP） |
 
 ## 目录结构
 
