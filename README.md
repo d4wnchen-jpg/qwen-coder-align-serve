@@ -74,19 +74,12 @@ python scripts/benchmark_report.py --results results/
 - **W5** 高吞吐实验：prefix caching / MTP / multi-LoRA 逐项对比
 - **W6** 压测报告 + GitHub 包装
 
-## 与 vLLM 上游贡献的联动
-
-本项目 W5 的部署优化实验（KV-cache、attention 后端、投机解码）与
-[vLLM good-first-issue #33267](https://github.com/vllm-project/vllm/issues/33267)
-（unified_kv_cache_update 清理）直接相关：在压测中理解的行为，正是上游 PR 的代码路径。
-简历可写成一条叙事：**"既懂上层对齐，又懂底层推理系统，vLLM 上游 contributor"**。
-
 ## 简历条目模板
 
 > **代码领域 LLM 对齐与高吞吐推理系统**（Qwen3-Coder / vLLM / LLaMA-Factory）
 > 主导数据清洗 → QLoRA SFT → AWQ 量化 → Multi-LoRA 热切换服务全流程；
 > EvalPlus 基准提升 X%；开启前缀缓存与 MTP 投机解码后吞吐提升 X 倍；
-> 单卡同时服务 N 个领域 LoRA。vLLM 上游 contributor（PR #xxxx）。
+> 单卡同时服务 N 个领域 LoRA。
 
 ## License
 
