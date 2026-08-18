@@ -2,7 +2,10 @@
 """数据准备：Magicoder-OSS-Instruct → 清洗 → LLaMA-Factory 格式
 
 用法（本机/任意机器，无需 GPU）:
+    # 方式 A：HF Hub 流式（国内网络先 export HF_ENDPOINT=https://hf-mirror.com）
     python data/prepare_data.py --num-samples 3000
+    # 方式 B：离线（先 bash data/download.sh 下好 JSONL）
+    python data/prepare_data.py --num-samples 3000 --local-jsonl data/raw/magicoder-oss-instruct.jsonl
 
 产出:
     data/train.json        # [{"instruction":..., "input":..., "output":...}]
@@ -54,32 +57,59 @@ def dedup_key(sample: dict) -> str:
     ).hexdigest()
 
 
-def main():
+def _parse_args():
     ap = argparse.ArgumentParser()
     ap.add_argument("--num-samples", type=int, default=3000)
     ap.add_argument("--dev-size", type=int, default=200)
     ap.add_argument("--dataset", default="ise-uiuc/Magicoder-OSS-Instruct-75K")
     ap.add_argument("--split", default="train")
-    args = ap.parse_args()
+    ap.add_argument(
+        "--local-jsonl",
+        default=None,
+        help="本地 JSONL 文件路径（离线清洗用；优先于 --dataset）",
+    )
+    return ap.parse_args()
 
+
+def iter_raw(args):
+    """按行产出原始样本 dict（HF 流式 or 本地 JSONL）。"""
+    if args.local_jsonl:
+        print(f"读取本地 JSONL: {args.local_jsonl}")
+        with open(args.local_jsonl, encoding="utf-8") as f:
+            for line in f:
+                line = line.strip()
+                if line:
+                    yield json.loads(line)
+        return
     from datasets import load_dataset
 
     print(f"下载 {args.dataset} ({args.split}) ...")
     ds = load_dataset(args.dataset, split=args.split, streaming=True)
+    yield from ds
+
+
+def to_instruction_triple(ex: dict) -> dict:
+    """Magicoder 格式(problem/solution) 与 LLaMA-Factory 格式(instruction/output) 双兼容。"""
+    return {
+        "instruction": normalize(ex.get("instruction") or ex.get("problem") or ""),
+        "input": normalize(ex.get("input", "") or ""),
+        "output": normalize(ex.get("output") or ex.get("response") or ex.get("solution") or ""),
+    }
+
+
+def main():
+    args = _parse_args()
 
     seen, kept = set(), []
-    for ex in ds:
+    for raw in iter_raw(args):
+        ex = to_instruction_triple(raw)
         if not is_quality(ex):
             continue
         k = dedup_key(ex)
         if k in seen:
             continue
         seen.add(k)
-        kept.append({
-            "instruction": normalize(ex["instruction"]),
-            "input": normalize(ex.get("input", "") or ""),
-            "output": normalize(ex["output"]),
-        })
+        kept.append(ex)
         if len(kept) >= args.num_samples + args.dev_size:
             break
 
