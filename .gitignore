@@ -1,0 +1,11 @@
+.venv/
+outputs/
+samples/
+results/
+data/train.json
+data/dev.json
+data/report.json
+__pycache__/
+*.pyc
+.DS_Store
+.cache/

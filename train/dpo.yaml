@@ -1,0 +1,49 @@
+# DPO 配置（可选 · W4 执行，算力富余时做）
+# 用法: llamafactory-cli train train/dpo.yaml
+# 前置: 先跑 SFT 得到 outputs/sft-r64-e3；DPO 数据需 preference 对
+#       可用 UltraFeedback 代码子集，或自行合成（base 拒绝 vs 接受）
+
+### model
+model_name_or_path: Qwen/Qwen3-Coder-30B-A3B-Instruct
+adapter_name_or_path: outputs/sft-r64-e3
+trust_remote_code: true
+
+### method
+stage: dpo
+do_train: true
+finetuning_type: lora
+lora_rank: 32
+lora_alpha: 64
+lora_target: all
+pref_beta: 0.1
+pref_loss: sigmoid
+pref_ftx: 0
+
+### dataset
+dataset: dpo_en_demo          # TODO: 替换为你的 preference 数据集（dataset_info.json 注册）
+template: qwen3
+cutoff_len: 2048
+overwrite_cache: true
+preprocessing_num_workers: 16
+
+### output
+output_dir: outputs/dpo-r32
+logging_steps: 10
+save_steps: 200
+plot_loss: true
+
+### train
+per_device_train_batch_size: 1
+gradient_accumulation_steps: 8
+learning_rate: 5.0e-6
+num_train_epochs: 1.0
+lr_scheduler_type: cosine
+warmup_ratio: 0.1
+bf16: true
+ddp_timeout: 180000000
+
+### eval
+val_size: 0.05
+per_device_eval_batch_size: 1
+eval_strategy: steps
+eval_steps: 200
