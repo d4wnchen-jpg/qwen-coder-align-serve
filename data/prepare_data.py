@@ -36,19 +36,62 @@ def normalize(s: str) -> str:
     return s.strip()
 
 
-def is_quality(sample: dict) -> bool:
+def extract_code_blocks(text: str) -> list[tuple[str, str]]:
+    """按 ``` 分隔解析代码块，返回 [(lang, code)]。"""
+    blocks = []
+    parts = text.split("```")
+    i = 0
+    while i + 1 < len(parts):
+        header = parts[i + 1]
+        lang = header.strip().split()[0].lower() if header.strip() else ""
+        code = header.split("\n", 1)[1] if "\n" in header else ""
+        blocks.append((lang, code))
+        i += 2
+    return blocks
+
+
+PLACEHOLDER_LINE = re.compile(
+    r"(pass|\.\.\.|raise NotImplementedError|#\s*TODO.*|"
+    r"#\s*Your code here|#\s*Add your code here|#\s*Implement this.*)",
+    re.I,
+)
+IMPLEMENT_WORDS = re.compile(
+    r"\b(implement\w*|writ\w*|creat\w*|develop\w*|build\w*|complet\w*|fix\w*)\b",
+    re.I,
+)
+
+
+def check_quality(sample: dict) -> str | None:
+    """质量过滤，返回丢弃原因（None=保留）。"""
     inst = normalize(sample.get("instruction", ""))
-    inp = normalize(sample.get("input", ""))
     out = normalize(sample.get("output", ""))
     if not inst or not out:
-        return False
+        return "empty"
     if len(inst) > MAX_INST_LEN or len(out) > MAX_OUT_LEN or len(out) < MIN_OUT_LEN:
-        return False
+        return "length"
     # 丢弃与 EvalPlus 测试题近重复的样本（粗筛，正式版可加 embedding 去重）
     blob = (inst + out).lower()
     if any(h in blob for h in POLLUTION_HINTS):
-        return False
-    return True
+        return "pollution"
+    # 规则 1：代码围栏必须成对
+    if out.count("```") % 2 != 0:
+        return "unbalanced_fence"
+    blocks = extract_code_blocks(out)
+    # 规则 2：骨架式解答（pass/TODO 占位过多）
+    if blocks:
+        lines = [l.strip() for l in blocks[0][1].split("\n")]
+        code_lines = [l for l in lines if l and not l.startswith("#")]
+        placeholders = [l for l in lines if PLACEHOLDER_LINE.fullmatch(l)]
+        if code_lines and len(placeholders) >= 2 and len(placeholders) / len(code_lines) >= 0.3:
+            return "skeleton"
+    # 规则 3：要求实现但输出没有代码
+    elif IMPLEMENT_WORDS.search(inst):
+        return "implement_no_code"
+    return None
+
+
+def is_quality(sample: dict) -> bool:
+    return check_quality(sample) is None
 
 
 def dedup_key(sample: dict) -> str:
@@ -100,13 +143,19 @@ def to_instruction_triple(ex: dict) -> dict:
 def main():
     args = _parse_args()
 
+    from collections import Counter
+
     seen, kept = set(), []
+    drop_stats: Counter = Counter()
     for raw in iter_raw(args):
         ex = to_instruction_triple(raw)
-        if not is_quality(ex):
+        reason = check_quality(ex)
+        if reason:
+            drop_stats[reason] += 1
             continue
         k = dedup_key(ex)
         if k in seen:
+            drop_stats["dup"] += 1
             continue
         seen.add(k)
         kept.append(ex)
@@ -128,7 +177,9 @@ def main():
         "kept": len(kept),
         "train": len(train),
         "dev": len(dev),
-        "note": "已去重+长度过滤+EvalPlus关键词粗筛；正式版建议增加语义去重",
+        "filter_stats": dict(drop_stats),
+        "note": "去重+长度+EvalPlus关键词粗筛+围栏平衡+骨架过滤+实现题无代码过滤；"
+        "正式版建议增加语义去重",
     }
     (DATA_DIR / "report.json").write_text(
         json.dumps(report, ensure_ascii=False, indent=2), encoding="utf-8"
