@@ -4,7 +4,7 @@
 #       可用 UltraFeedback 代码子集，或自行合成（base 拒绝 vs 接受）
 
 ### model
-model_name_or_path: Qwen/Qwen3-8B-Instruct
+model_name_or_path: Qwen/Qwen3-8B
 adapter_name_or_path: outputs/sft-r64-e3
 trust_remote_code: true
 

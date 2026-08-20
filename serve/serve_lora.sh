@@ -14,7 +14,7 @@ for m in "${LORA_MODULES[@]}"; do
   MODULES_ARG="${MODULES_ARG} --lora-modules ${m}"
 done
 
-VLLM_USE_V1=1 vllm serve Qwen/Qwen3-8B-Instruct \
+VLLM_USE_V1=1 vllm serve Qwen/Qwen3-8B \
   --served-model-name qwen3-8b-multilora \
   --max-model-len 8192 \
   --enable-prefix-caching \

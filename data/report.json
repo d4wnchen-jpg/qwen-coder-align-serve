@@ -1,0 +1,15 @@
+{
+  "dataset": "ise-uiuc/Magicoder-OSS-Instruct-75K",
+  "split": "train",
+  "kept": 3200,
+  "train": 3000,
+  "dev": 200,
+  "filter_stats": {
+    "length": 134,
+    "implement_no_code": 23,
+    "skeleton": 3,
+    "unbalanced_fence": 3,
+    "pollution": 1
+  },
+  "note": "去重+长度+EvalPlus关键词粗筛+围栏平衡+骨架过滤+实现题无代码过滤；正式版建议增加语义去重"
+}

@@ -9,7 +9,7 @@ if [ "$MODE" = "awq" ]; then
   MODEL="Qwen/Qwen3-8B-AWQ"
   QARGS="--quantization awq_marlin"
 elif [ "$MODE" = "fp8" ]; then
-  MODEL="Qwen/Qwen3-8B-Instruct"
+  MODEL="Qwen/Qwen3-8B"
   QARGS="--quantization fp8"
 else
   echo "用法: $0 [awq|fp8]"; exit 1

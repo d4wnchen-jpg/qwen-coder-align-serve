@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
-# 基线服务：Qwen3-8B-Instruct（BF16，4090 24GB 直跑）
+# 基线服务：Qwen3-8B（BF16，4090 24GB 直跑）
 # 验证版本: vLLM 0.19+（以租卡机实际安装版本为准）
 set -euo pipefail
 
-VLLM_USE_V1=1 vllm serve Qwen/Qwen3-8B-Instruct \
+VLLM_USE_V1=1 vllm serve Qwen/Qwen3-8B \
   --served-model-name qwen3-8b \
   --max-model-len 8192 \
   --gpu-memory-utilization 0.90 \

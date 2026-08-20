@@ -8,7 +8,7 @@
 
 | 环节 | 选型 | 说明 |
 |---|---|---|
-| 基座模型 | **Qwen/Qwen3-8B-Instruct**（4090 bf16 直跑） | 通用 8B → 代码域 SFT 提升 |
+| 基座模型 | **Qwen/Qwen3-8B**（4090 bf16 直跑） | 通用 8B → 代码域 SFT 提升 |
 | 对齐 | **LLaMA-Factory**（QLoRA SFT + DPO） | 社区事实标准 |
 | 数据 | Magicoder-OSS-Instruct（筛 2-4k 高质量子集） | 代码指令数据 |
 | 评估 | **EvalPlus**（HumanEval+/MBPP+，pass@1） | 防数据污染标准 |
