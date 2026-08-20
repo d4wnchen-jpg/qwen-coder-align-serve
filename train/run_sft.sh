@@ -9,7 +9,7 @@ llamafactory-cli train "${CFG}"
 
 echo "==> 合并 LoRA 到 base（导出用于 vLLM multi-LoRA 服务的 adapter）"
 llamafactory-cli export \
-  --model_name_or_path Qwen/Qwen3-Coder-30B-A3B-Instruct \
+  --model_name_or_path Qwen/Qwen3-8B-Instruct \
   --adapter_name_or_path outputs/sft-r64-e3 \
   --template qwen3 \
   --finetuning_type lora \
