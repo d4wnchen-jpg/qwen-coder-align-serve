@@ -2,7 +2,7 @@
 # EvalPlus 评估入口：先起 vLLM 服务，再生成 + 评测
 set -euo pipefail
 
-MODEL="${1:-qwen3-coder}"                 # 服务名
+MODEL="${1:-qwen3-8b}"                    # 服务名（需与 serve_base.sh 的 --served-model-name 一致）
 TAG="${2:-sft-r64-e3}"                    # 结果目录标签
 BASE_URL="${BASE_URL:-http://localhost:8000/v1}"
 
