@@ -8,7 +8,7 @@
 
 | 环节 | 选型 | 说明 |
 |---|---|---|
-| 基座模型 | **Qwen/Qwen3-8B-Instruct**（主力，4090 bf16 直跑）/ Qwen3-Coder-30B-A3B-Instruct（升级备选） | 通用 8B → 代码域 SFT 提升 |
+| 基座模型 | **Qwen/Qwen3-8B-Instruct**（4090 bf16 直跑） | 通用 8B → 代码域 SFT 提升 |
 | 对齐 | **LLaMA-Factory**（QLoRA SFT + DPO） | 社区事实标准 |
 | 数据 | Magicoder-OSS-Instruct（筛 2-4k 高质量子集） | 代码指令数据 |
 | 评估 | **EvalPlus**（HumanEval+/MBPP+，pass@1） | 防数据污染标准 |
@@ -76,7 +76,7 @@ python scripts/benchmark_report.py --results results/
 
 ## 简历条目模板
 
-> **代码领域 LLM 对齐与高吞吐推理系统**（Qwen3-Coder / vLLM / LLaMA-Factory）
+> **代码领域 LLM 对齐与高吞吐推理系统**（Qwen3-8B / vLLM / LLaMA-Factory）
 > 主导数据清洗 → QLoRA SFT → AWQ 量化 → Multi-LoRA 热切换服务全流程；
 > EvalPlus 基准提升 X%；开启前缀缓存与 MTP 投机解码后吞吐提升 X 倍；
 > 单卡同时服务 N 个领域 LoRA。
