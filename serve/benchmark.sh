@@ -7,7 +7,8 @@ set -euo pipefail
 PORT="${1:-8000}"
 TAG="${2:-base}"
 BASE_URL="http://localhost:${PORT}"
-MODEL_PATH="${MODEL_PATH:-/root/autodl-tmp/Qwen3-8B}"   # bench 需要真实模型路径（加载 tokenizer）
+SERVED_NAME="${SERVED_NAME:-qwen3-8b}"     # 需与 serve_base.sh 的 --served-model-name 一致
+MODEL_PATH="${MODEL_PATH:-/root/autodl-tmp/Qwen3-8B}"   # throughput 需本地路径加载 tokenizer
 OUT="results/${TAG}"
 mkdir -p "${OUT}"
 
@@ -33,15 +34,16 @@ fi
 
 echo "==> 1) 在线服务吞吐（serve benchmark，异步并发，RPS 曲线）"
 vllm bench serve \
-  --backend vllm \
+  --backend openai-chat \
   --base-url "${BASE_URL}" \
-  --model "${MODEL_PATH}" \
+  --model "${SERVED_NAME}" \
   --dataset-name random \
   --input-len 512 \
   --output-len 256 \
   --num-prompts 300 \
   --request-rate 8 \
   --burstiness 2.0 \
+  --temperature 0 \
   --seed 42 \
   --save-result \
   --result-dir "${OUT}" \
