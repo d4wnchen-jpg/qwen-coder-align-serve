@@ -36,7 +36,9 @@ echo "==> 1) 在线服务吞吐（serve benchmark，异步并发，RPS 曲线）
 vllm bench serve \
   --backend openai-chat \
   --base-url "${BASE_URL}" \
+  --endpoint /v1/chat/completions \
   --model "${SERVED_NAME}" \
+  --tokenizer "${MODEL_PATH}" \
   --dataset-name random \
   --input-len 512 \
   --output-len 256 \
