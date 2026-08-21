@@ -7,6 +7,7 @@ set -euo pipefail
 PORT="${1:-8000}"
 TAG="${2:-base}"
 BASE_URL="http://localhost:${PORT}"
+MODEL_PATH="${MODEL_PATH:-/root/autodl-tmp/Qwen3-8B}"   # bench 需要真实模型路径（加载 tokenizer）
 OUT="results/${TAG}"
 mkdir -p "${OUT}"
 
@@ -34,7 +35,7 @@ echo "==> 1) 在线服务吞吐（serve benchmark，异步并发，RPS 曲线）
 vllm bench serve \
   --backend vllm \
   --base-url "${BASE_URL}" \
-  --model "$(curl -s ${BASE_URL}/v1/models | python -c 'import sys,json;print(json.load(sys.stdin)["data"][0]["id"])')" \
+  --model "${MODEL_PATH}" \
   --dataset-name random \
   --input-len 512 \
   --output-len 256 \
@@ -48,7 +49,7 @@ vllm bench serve \
 
 echo "==> 2) 离线吞吐（throughput benchmark，需先停掉在线服务或另起引擎）"
 vllm bench throughput \
-  --model /root/autodl-tmp/Qwen3-8B \
+  --model "${MODEL_PATH}" \
   --dataset-name random \
   --input-len 512 \
   --output-len 256 \
