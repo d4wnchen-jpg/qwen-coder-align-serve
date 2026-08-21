@@ -30,18 +30,7 @@ print("生成 prompts_code.jsonl")
 PY
 fi
 
-echo "==> 1) 离线吞吐（latency benchmark，同步请求）"
-vllm bench latency \
-  --backend vllm \
-  --base-url "${BASE_URL}" \
-  --model "$(curl -s ${BASE_URL}/v1/models | python -c 'import sys,json;print(json.load(sys.stdin)["data"][0]["id"])')" \
-  --dataset-name random \
-  --input-len 256 \
-  --output-len 256 \
-  --num-iters 300 \
-  --json-output "${OUT}/latency.json"
-
-echo "==> 2) 在线服务（RPS 曲线，异步并发）"
+echo "==> 1) 在线服务吞吐（serve benchmark，异步并发，RPS 曲线）"
 vllm bench serve \
   --backend vllm \
   --base-url "${BASE_URL}" \
@@ -56,5 +45,16 @@ vllm bench serve \
   --save-result \
   --result-dir "${OUT}" \
   --result-filename serve.json
+
+echo "==> 2) 离线吞吐（throughput benchmark，需先停掉在线服务或另起引擎）"
+vllm bench throughput \
+  --model /root/autodl-tmp/Qwen3-8B \
+  --dataset-name random \
+  --input-len 512 \
+  --output-len 256 \
+  --num-prompts 300 \
+  --save-result \
+  --result-dir "${OUT}" \
+  --result-filename throughput.json
 
 echo "==> 压测完成 → ${OUT}/"
