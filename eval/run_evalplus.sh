@@ -8,12 +8,12 @@ BASE_URL="${BASE_URL:-http://localhost:8000/v1}"
 
 echo "==> 生成 HumanEval+ / MBPP+ 解答"
 python eval/gen_solutions.py --base-url "${BASE_URL}" --model "${MODEL}" \
-    --out "samples/${TAG}/humaneval_samples.jsonl"
+    --out "samples/${TAG}/solutions.jsonl"
 
 echo "==> HumanEval+ 评估"
-evalplus.evaluate --dataset humaneval --samples "samples/${TAG}/humaneval_samples.jsonl"
+evalplus.evaluate --dataset humaneval --samples "samples/${TAG}/solutions.humaneval.jsonl"
 
 echo "==> MBPP+ 评估"
-evalplus.evaluate --dataset mbpp --samples "samples/${TAG}/humaneval_samples.jsonl"
+evalplus.evaluate --dataset mbpp --samples "samples/${TAG}/solutions.mbpp.jsonl"
 
 echo "==> 完成，结果在 evalplus 缓存目录（默认 ~/.evalplus）"
