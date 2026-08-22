@@ -19,7 +19,7 @@ gradient_checkpointing: true
 ### dataset
 dataset: code_train
 template: qwen3
-cutoff_len: 2048
+cutoff_len: 1536
 max_samples: 100000
 overwrite_cache: true
 preprocessing_num_workers: 16
