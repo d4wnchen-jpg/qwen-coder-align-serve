@@ -15,6 +15,7 @@ lora_alpha: 32
 lora_target: all
 lora_dropout: 0.05
 gradient_checkpointing: true
+flash_attn: sdpa
 
 ### dataset
 dataset: code_train
