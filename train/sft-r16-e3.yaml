@@ -1,6 +1,6 @@
-# QLoRA SFT 配置（LLaMA-Factory）
-# 用法: llamafactory-cli train train/sft.yaml
-# 基座: Qwen3-8B（4090 24GB 直跑 bf16）
+# QLoRA SFT · 矩阵组 r16-e3（lora_rank=16, epoch=3）
+# 用法: llamafactory-cli train train/sft-r16-e3.yaml
+# 基座: Qwen3-8B（4090 bf16 直跑）
 
 ### model
 model_name_or_path: Qwen/Qwen3-8B
@@ -10,8 +10,8 @@ trust_remote_code: true
 stage: sft
 do_train: true
 finetuning_type: lora
-lora_rank: 64
-lora_alpha: 128
+lora_rank: 16
+lora_alpha: 32
 lora_target: all
 lora_dropout: 0.05
 gradient_checkpointing: true
@@ -26,14 +26,14 @@ preprocessing_num_workers: 16
 val_size: 0.05
 
 ### output
-output_dir: outputs/sft-r64-e3
+output_dir: outputs/sft-r16-e3
 logging_steps: 10
 save_steps: 200
 plot_loss: true
 
 ### train
 per_device_train_batch_size: 2
-gradient_accumulation_steps: 8     # 等效 batch 16
+gradient_accumulation_steps: 8
 learning_rate: 2.0e-4
 num_train_epochs: 3.0
 lr_scheduler_type: cosine
@@ -46,8 +46,3 @@ packing: false
 per_device_eval_batch_size: 2
 eval_strategy: steps
 eval_steps: 200
-
-# 实验矩阵（改 lora_rank / num_train_epochs / learning_rate 后另存为 sft-r16-e2.yaml 等）:
-#   r=16 alpha=32 epoch=2 lr=2e-4
-#   r=64 alpha=128 epoch=2 lr=2e-4
-#   r=64 alpha=128 epoch=3 lr=1e-4

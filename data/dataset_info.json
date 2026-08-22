@@ -1,0 +1,12 @@
+{
+  "code_train": {
+    "file_name": "train.json",
+    "columns": {"prompt": "instruction", "query": "input", "response": "output"},
+    "formatting": "alpaca"
+  },
+  "code_dev": {
+    "file_name": "dev.json",
+    "columns": {"prompt": "instruction", "query": "input", "response": "output"},
+    "formatting": "alpaca"
+  }
+}
