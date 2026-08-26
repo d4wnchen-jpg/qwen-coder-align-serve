@@ -1,0 +1,20 @@
+{
+  "date": "2026-08-21",
+  "model": "Qwen3-8B (bf16, /root/autodl-tmp/Qwen3-8B)",
+  "vllm_version": "0.27.1",
+  "torch_version": "2.13.0+cu130",
+  "gpu": "RTX 4090 24GB",
+  "serve_config": "max-model-len 8192, gpu-mem-util 0.90, no prefix caching",
+  "bench_config": "openai-chat backend, random dataset, input 512 / output 256, num-prompts 300, RPS 8, temperature 0",
+  "metrics": {
+    "output_token_throughput_tok_s": 1290.84,
+    "peak_output_token_throughput_tok_s": 2052.00,
+    "total_token_throughput_tok_s": 3912.84,
+    "request_throughput_req_s": 5.04,
+    "ttft_mean_ms": 8160.67,
+    "ttft_median_ms": 7427.05,
+    "ttft_p99_ms": 18310.28,
+    "tpot_mean_ms": 34.46,
+    "peak_concurrent_requests": 146
+  }
+}

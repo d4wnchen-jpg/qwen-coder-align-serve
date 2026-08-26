@@ -1,0 +1,12 @@
+{
+  "date": "2026-08-21",
+  "model": "Qwen3-8B (bf16, /root/autodl-tmp/Qwen3-8B)",
+  "vllm_version": "0.27.1",
+  "gen_config": "enable_thinking=false, temperature=0, max_tokens=2048, num_shots=1",
+  "metrics": {
+    "humaneval_pass1": 0.860,
+    "humaneval_plus_pass1": 0.811,
+    "mbpp_pass1": 0.707,
+    "mbpp_plus_pass1": 0.617
+  }
+}
