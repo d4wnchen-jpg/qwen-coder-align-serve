@@ -1,9 +1,13 @@
 .venv/
 outputs/
 samples/
-results/
 __pycache__/
 *.pyc
 .DS_Store
 .cache/
 data/raw/
+
+# results 只提交图表和说明，忽略原始压测 JSON（体积大、在服务器上）
+results/*.json
+results/*/*.json
+results/*.jsonl
