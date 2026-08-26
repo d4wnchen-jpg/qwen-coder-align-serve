@@ -4,6 +4,43 @@
 
 > English: An end-to-end project for code-domain LLM alignment and high-throughput serving: data curation → LoRA SFT matrix → AWQ quantization → vLLM serving (prefix caching / multi-LoRA) → EvalPlus evaluation & load-test reports.
 
+## 系统架构
+
+```
+                    ┌─────────────────────────────────────────────┐
+                    │              数据层（W1，本机）              │
+                    │  Magicoder-OSS-Instruct-75K → 清洗/去重/防污染 │
+                    │              train 3000 / dev 200            │
+                    └──────────────────────┬──────────────────────┘
+                                           │
+                    ┌──────────────────────▼──────────────────────┐
+                    │            训练层（W3，4090）                │
+                    │   LLaMA-Factory · LoRA(bf16+sdpa)            │
+                    │   矩阵 r16/64 × e2/3 → 4 个 adapter           │
+                    │   结论：强基座 SFT 负优化（过拟合）           │
+                    └──────────────────────┬──────────────────────┘
+                                           │
+                    ┌──────────────────────▼──────────────────────┐
+                    │          模型资产（W4）                      │
+                    │  ├─ Qwen3-8B bf16（基线 16.7G）              │
+                    │  ├─ AWQ INT4（5.7G，省 66%）                 │
+                    │  └─ r64-e2 LoRA adapter（最优）              │
+                    └──────────────────────┬──────────────────────┘
+                                           │
+                    ┌──────────────────────▼──────────────────────┐
+                    │        服务层（W5，vLLM 0.27.1 V1）          │
+                    │  ├─ prefix caching：吞吐 +60% / TTFT -63%    │
+                    │  ├─ multi-LoRA：一基座挂 4 adapter 热切换    │
+                    │  └─ 投机解码：ngram 负优化（-24%，排除）     │
+                    └──────────────────────┬──────────────────────┘
+                                           │
+                    ┌──────────────────────▼──────────────────────┐
+                    │        评估层（贯穿全程）                    │
+                    │  EvalPlus：HumanEval+ 164 / MBPP+ 399       │
+                    │  vLLM bench：吞吐 / TTFT / TPOT 压测         │
+                    └─────────────────────────────────────────────┘
+```
+
 ## 核心结果（一图流）
 
 ### 对齐：SFT 在强基座上的负优化（真实发现）
