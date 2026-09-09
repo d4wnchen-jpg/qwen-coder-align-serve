@@ -91,10 +91,6 @@ Qwen3-8B 本身代码能力已接近上限（HumanEval+ 81.1%），在其上用 
 ```
 qwen-coder-align-serve/
 ├── README.md                  # 本文件（核心结果 + 复现）
-├── docs/
-│   ├── 执行计划.md             # 6 周路线 + ¥300 预算 + 风险表
-│   ├── 面试要点.md             # 面试问答速记（数据→训练→评估→部署全链路）
-│   └── 交接文档.md             # 会话交接（进度 + 踩坑记录）
 ├── data/                      # prepare_data.py + dataset_info.json
 ├── train/                     # sft.yaml / sft-r16-e2.yaml ... / run_matrix.sh
 ├── eval/                      # gen_solutions.py / run_evalplus.sh
@@ -126,9 +122,7 @@ bash eval/run_evalplus.sh
 python scripts/benchmark_report.py --results results/
 ```
 
-> 详细踩坑记录（vLLM 0.27 适配、OOM 排查、思考模型评测、磁盘清理）见 `docs/交接文档.md` 与 `docs/面试要点.md`。
-
-## 关键结论（面试可讲）
+## 关键结论
 
 1. **强基座上普通 SFT 负优化**：基座 81.1% 已近上限，教辅数据 SFT 导致灾难性遗忘 + 过拟合；正解是「可验证 reward 的 RL（GRPO）」，但那是独立项目量级。
 2. **量化 tradeoff**：AWQ 省 66% 显存、KV cache 多 3.5×，HumanEval+ 掉 6.7 分（边界用例敏感），MBPP+ 几乎不损。

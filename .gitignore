@@ -7,6 +7,13 @@ __pycache__/
 .cache/
 data/raw/
 
+# docs/ 为个人过程记录（面试准备/执行计划），不入库
+docs/
+
+# 演示 PPT 与 Office 临时文件不入库
+*.pptx
+~$*
+
 # results 只提交图表和说明，忽略原始压测 JSON（体积大、在服务器上）
 results/*.json
 results/*/*.json

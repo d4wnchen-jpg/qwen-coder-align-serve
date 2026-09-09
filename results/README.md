@@ -72,4 +72,4 @@ vllm bench serve ... --lora-assignment round-robin \
   --lora-modules r16-e2 r16-e3 r64-e2 r64-e3
 ```
 
-> 注：`results/` 下的 `serve.json`（原始压测 JSON）在训练服务器上；本仓库保留图表 + 数据速查表，关键数字同步于 `docs/交接文档.md`。
+> 注：`results/` 下的 `serve.json`（原始压测 JSON）在训练服务器上；本仓库保留图表 + 数据速查表，关键数字同步于根目录 `README.md`。
