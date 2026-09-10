@@ -43,9 +43,7 @@
 
 ## 核心结果（一图流）
 
-### 对齐：SFT 在强基座上的负优化（真实发现）
-
-Qwen3-8B 本身代码能力已接近上限（HumanEval+ 81.1%），在其上用 3000 条教辅数据做 LoRA SFT，4 组超参矩阵**全部跑输基线**——这是「强基座上普通 SFT 灾难性遗忘 + 过拟合」的实证：
+### 对齐：SFT 在强基座上的负优化
 
 | 模型 | 训练 loss | HumanEval+ | MBPP+ |
 |---|---|---|---|
@@ -55,7 +53,6 @@ Qwen3-8B 本身代码能力已接近上限（HumanEval+ 81.1%），在其上用 
 | **r64-e2** | 0.1683 | **75.6%** | 61.2% |
 | r64-e3 | 0.0644 | 70.7% | 60.7% |
 
-- 过拟合铁证：loss 最低的 r64-e3（0.0644）反而垫底；用 **held-out 评测（EvalPlus+）选 checkpoint，而非训练 loss**。
 
 ### 量化：AWQ INT4 的 tradeoff
 
@@ -99,13 +96,13 @@ qwen-coder-align-serve/
 └── requirements.txt
 ```
 
-## 快速复现（GPU 机器，≤5 步）
+## 快速复现
 
 ```bash
 # 0. 环境（torch 2.13 + CUDA 13 + vLLM 0.27.1）
 pip install -r requirements.txt
 
-# 1. 数据（任意机器可跑）
+# 1. 数据
 python data/prepare_data.py --num-samples 3000
 
 # 2. 训练（4090 24GB，bf16 LoRA + sdpa，约 36min/组）
@@ -122,13 +119,6 @@ bash eval/run_evalplus.sh
 python scripts/benchmark_report.py --results results/
 ```
 
-## 关键结论
-
-1. **强基座上普通 SFT 负优化**：基座 81.1% 已近上限，教辅数据 SFT 导致灾难性遗忘 + 过拟合；正解是「可验证 reward 的 RL（GRPO）」，但那是独立项目量级。
-2. **量化 tradeoff**：AWQ 省 66% 显存、KV cache 多 3.5×，HumanEval+ 掉 6.7 分（边界用例敏感），MBPP+ 几乎不损。
-3. **prefix caching 收益 = f(前缀占比, 负载强度)**：低负载（RPS=8）测不出吞吐收益，高负载（RPS=32，GPU 饱和）才见 +60%。
-4. **multi-LoRA 数量无瓶颈**：adapter 常驻显存、路由只选指针，4 个 ≈ 1 个；代价是 LoRA 本身的 ~13% 矩阵乘法开销。
-5. **ngram 投机解码对代码负优化**：接受率 47% + 强制回退 V1 runner，有数据地排除。
 
 ## License
 
